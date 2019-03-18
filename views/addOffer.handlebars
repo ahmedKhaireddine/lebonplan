@@ -1,0 +1,47 @@
+<section class="section-signup">
+  <div class="div-title">
+    <h2>Inscrirez vous et choppez votre bon plan</h2>
+  </div>
+  <div class="div-form">
+    <form enctype="multipart/form-data" action='/add/offre' method='POST'>
+          <ul>
+              <li class="list-form">
+                <label for="title"><i class="fas fa-user"></i></label>
+                <input type="text" class="" name="title" id="title" placeholder="Titre de l'annonce">
+              </li>
+              <li class="list-form">
+                <label for="description"><i class="fas fa-user"></i></label>
+                <input type="text" class="" name="description" id="description" placeholder="Ajouter une description">
+              </li>
+              <li class="list-form">
+                <label for="ville"><i class="far fa-envelope"></i></label>
+                <select id="pet-select">
+                    <option value="">--Please choose an option--</option>
+                    <option value="dog">Dog</option>
+                    <option value="cat">Cat</option>
+                    <option value="hamster">Hamster</option>
+                    <option value="parrot">Parrot</option>
+                    <option value="spider">Spider</option>
+                    <option value="goldfish">Goldfish</option>
+                </select>
+                <input type="" class="" name="email" id="email" placeholder="Email">
+              </li>
+              <li class="list-form">
+                <label for="password"><i class="fas fa-unlock-alt"></i></label>
+                <input type="password" class="" name="password" id="password" placeholder="Mot de passe">
+                {{#if error.email}}<small class="error">{{error.email}}</small>{{/if }}
+              </li>
+              <li class="list-form">
+                <label for="passwordComfirm"><i class="fas fa-unlock-alt"></i></label>
+                <input type="password" class="" name="passwordComfirm" id="passwordComfirm" placeholder="Confirmation mot de passe">
+                {{#if error.passwordComfirm}}<small class="error">{{error.passwordComfirm}}</small>{{/if }}
+              </li>
+              {{!-- <li class="pictur-input">
+                <i class="fas fa-camera"></i>
+                <input type="file" name="image" />
+              </li> --}}
+          </ul>
+          <button type="submit" class="">Submit</button>
+    </form>
+  </div>
+<section>

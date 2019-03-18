@@ -1,0 +1,47 @@
+<section class="container">
+    <div class="row">
+        <article class="col-12 col-lg-8">
+            {{#each product.images}}
+            <img src="{{this}}" alt="">
+            {{/each }}
+            <h3>Titre : {{product.title}}</h3>
+            {{#if product.criteria}}
+            <p>Type : {{product.criteria.type}}</p>
+            <p>Taille : {{product.criteria.size}}</p>
+            {{/if }}
+            <p>Description : {{product.description}}</p>
+            <p>Pays : {{product.city}}</p>
+            <p>date de creation : {{date}}</p>
+        </article>
+        <aside class="d-none d-lg-inline-block col-lg-4">
+            <img src="{{user.thumbnail}}" alt="">
+            <p>{{user.firstName}}</p>
+            <p>{{user.surname}}</p>
+        </aside>
+    </div>
+</section>
+
+
+
+{{!-- <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+    <ol class="carousel-indicators">
+        {{#each product.images}}
+        <li data-target="#carouselExampleIndicators" data-slide-to="{{@index}}" class="{{#if @index}}active{{/if}}"></li>
+        {{/each }}
+    </ol>
+    <div class="carousel-inner">
+        {{#each product.images}}
+            <div class="carousel-item {{#if @index}}active{{/if}}">
+                <img src="{{this}}" class="d-block w-100" alt="photo de produit">
+            </div>
+        {{/each }}
+    </div>
+    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+    </a>
+</div> --}}

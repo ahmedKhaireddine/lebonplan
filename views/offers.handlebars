@@ -1,0 +1,16 @@
+
+<section class="section-offers container">
+    <div class="row">
+        <div class="col-12 col-lg-8">
+            <div class="div-title-offer">
+                <h2>Nos bons plans à {{city}}</h2>
+            </div>
+            {{#each products}}
+                {{> offer-list-item }}
+            {{/each }}
+        </div>
+        <div class="d-none d-lg-block">
+
+        </div>
+    </div>
+</section>
