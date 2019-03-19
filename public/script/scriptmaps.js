@@ -112,6 +112,18 @@ var tableVille = {
     974: { name: "Saint-denis" },
     976: { name: "Dzaoudzi" }
 };
+
+$('#select-city').click(function() {
+    $('#select-city').html("");
+    var keys = Object.keys(tableVille);
+    console.log('keys: ', keys);
+    var html = "";
+    for (var i = 0; i < keys.length; i++) {
+        html += "<option value='" + tableVille[keys[i]].name + "'>" + tableVille[keys[i]].name + "</option>";
+        console.log(tableVille[keys[i]].name);
+    }
+    $('#select-city').append(html);
+});
 // carte map
 document.addEventListener('DOMContentLoaded', function() {
     map = this.getElementById('map');

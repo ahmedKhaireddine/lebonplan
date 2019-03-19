@@ -244,11 +244,17 @@ a {
     color: #cb2e24;
 }
 
-.list-form input {
+.list-form input,
+.list-form textarea,
+.list-form select {
     margin-left: 20px;
     width: 80%;
     border: 0;
     color: #a3abb2;
+}
+
+.list-form select {
+    border-radius: 0;
 }
 
 .section-signup button,

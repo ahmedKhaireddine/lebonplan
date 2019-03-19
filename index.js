@@ -1,19 +1,23 @@
-var express = require('express');
-var exphbs = require('express-handlebars');
-var expressSession = require("express-session");
-var MongoStore = require("connect-mongo")(expressSession);
-var mongoose = require("mongoose");
-var passport = require("passport");
-var multer = require("multer");
-var fs = require("fs");
-var bodyParser = require("body-parser");
-var LocalStrategy = require("passport-local");
-var passportLocalMongoose = require("passport-local-mongoose");
-var User = require("./models").User;
-var Favorite = require("./models").Favorite;
-var OfferModel = require('./models').Offer;
-var port = process.env.PORT || 3000;
-var upload = multer({ dest: "public/img/profils/" });
+var express = require('express'); // apple au module express c'est un freamework node
+var exphbs = require('express-handlebars'); // apple au module express-handlebars qui gère le templating
+var expressSession = require("express-session"); // apple au module express-session qui gère les session
+var MongoStore = require("connect-mongo")(expressSession); // apple au module
+var mongoose = require("mongoose"); // apple au module mongoose qui gère la BD
+var passport = require("passport"); // apple au module qui hash les mot de passe
+var multer = require("multer"); // apple au module qui gère le telechargement du fichier
+var fs = require("fs"); // apple au module qui manipule les fichiers
+var bodyParser = require("body-parser"); // apple au module qui recuper les donnees de formulaire
+var LocalStrategy = require("passport-local"); // apple au module
+var passportLocalMongoose = require("passport-local-mongoose"); // apple au module
+var expValChecker = require("express-validator/check"); // apple au module qui gère la validation de formulaire
+var User = require("./models").User; // apple au model de base de donnees
+var Favorite = require("./models").Favorite; // apple au model de base de donnees
+var OfferModel = require('./models').Offer; // apple au model de base de donnees
+var port = process.env.PORT || 3000; // creer le portou le serveur il va etre lancer
+var upload = multer({ dest: "public/img/profils/" }); // creer le chemin ou les fichier vont etre enregistrer
+var check = expValChecker.check; // methode pour valider les formulaire
+var validationResult = expValChecker.validationResult; // methode pour retourner les error
+// se connecter a la BD
 mongoose.connect(
     process.env.MONGODB_URI ||
     "mongodb://localhost:27017/lebonplan", {
@@ -21,15 +25,15 @@ mongoose.connect(
         useCreateIndex: true
     }
 );
-
+// creer un instance pour le serveur
 var app = express();
 
-// Express configuration
-
+// utiliser les ressource dans le fichier public
 app.use(express.static('public'));
-
+// configuration necessaire pour utiliser le templaiting
 app.engine('handlebars', exphbs({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');
+// Configuration de module bodyParser
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // enable session management
@@ -42,7 +46,7 @@ app.use(
     })
 );
 
-// enable Passport
+// Initilisation de Passport
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -51,6 +55,7 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser()); // JSON.stringify
 passport.deserializeUser(User.deserializeUser()); // JSON.parse
 
+// Creer la roote pour recuperer un offre par son id
 app.get('/offer/:id', function(req, res) {
     var id = req.params.id;
     console.log('id est : ', id);
@@ -74,8 +79,7 @@ app.get('/offer/:id', function(req, res) {
     });
 
 });
-
-
+//Creer la root pour recuperer les offre dans une ville
 app.get('/cities/:city', function(req, res) {
     var city = req.params.city;
     console.log("city ", city);
@@ -99,20 +103,22 @@ app.get('/cities/:city', function(req, res) {
     });
 
 });
-
+// Creer la root pour aller a la page d'acceuil
 app.get("/", function(req, res) {
     res.render("home");
 });
-
+//Creer la root pour aller a la page admin et que les user connecter il sont le droit
 app.get("/admin", function(req, res) {
     if (req.isAuthenticated()) {
         console.log(req.user);
-        res.render("admin");
+        res.render("admin", {
+            user: user
+        });
     } else {
         res.redirect("/");
     }
 });
-
+// verification si le user est connect il a plus le droit pour aller a la page signup
 app.get("/signup", function(req, res) {
     if (req.isAuthenticated()) {
         res.redirect("/admin");
@@ -120,7 +126,7 @@ app.get("/signup", function(req, res) {
         res.render("signup");
     }
 });
-
+// recuperation, traitement et sauvgarde des donner au moment de l'inscription
 app.post("/signup", upload.single("image"), function(req, res) {
 
     console.log("will signup");
@@ -176,7 +182,7 @@ app.post("/signup", upload.single("image"), function(req, res) {
     }
 
 });
-
+// verification si le user est connect il a plus le droit pour aller a la page login
 app.get("/login", function(req, res) {
     if (req.isAuthenticated()) {
         res.redirect("/admin");
@@ -184,7 +190,7 @@ app.get("/login", function(req, res) {
         res.render("login");
     }
 });
-
+// recuperation, verification de user au moment de la connection
 app.post(
     "/login",
     passport.authenticate("local", {
@@ -192,12 +198,12 @@ app.post(
         failureRedirect: "/login"
     })
 );
-
+// la root pour se deconnecter
 app.get("/logout", function(req, res) {
     req.logout();
     res.redirect("/");
 });
-
+//root pour ajouter un produit au favorit
 app.get('/add/favorites/:offerId', function(req, res) {
     var offerId = req.params.offerId;
     console.log('offerId add : ', offerId);
@@ -235,6 +241,7 @@ app.get('/add/favorites/:offerId', function(req, res) {
         }
     });
 });
+//root pour enlever un produit au favorit
 app.get('/remove/favorites/:offerId', function(req, res) {
     var offerId = req.params.offerId;
     console.log('offerId remove : ', offerId);
@@ -243,14 +250,68 @@ app.get('/remove/favorites/:offerId', function(req, res) {
         isFavorite: false
     });
 });
+// a tester après la fin de la pge add/offer
+// app.get('/add/offre', function(req, res) {
+//     if (req.isAuthenticated()) {
+//         res.render('addOffer');
+//     } else {
+//         res.render("login");
+//     }
+// });
+// root vers page qui ajoute un produit
+app.get('/add/offre', function(req, res) {
+    res.render('addOffer');
+});
+// recuperation, traitement et sauvgarde des donner au moment de l'ajoute d'un produit
+app.post('/add/offre',
+    upload.array('photos', 12),
+    check('title').isEmpty().withMessage('il faut remplir se champs.'),
+    // .isLength({ min: 3 }).withMessage('la taille min est 3 .'),
+    function(req, res) {
+        var errors = validationResult(req);
+        if (errors.array().length > 0) {
+            res.json({
+                errors: errors.array()
+            });
+        }
 
+        // console.log("tableau d'image : ", req.files);
+        // console.log("tableau d'infos : ", req.body);
+        // var images = [];
+        // for (var i = 0; i < req.files.length; i++) {
+        //     fs.rename(
+        //         req.files[i].path,
+        //         "public/img/profils/" + req.files[i].filename + ".png",
+        //         function() {
+        //             console.log("Renomation bien passer !");
+        //         }
+        //     );
+        //     images.push("/img/profils/" + req.files[i].filename + ".png");
+        // }
+        // var newOffer = new OfferModel({
+        //     images: images,
+        //     id: 12,
+        //     title: req.body.title,
+        //     //ajouter l'objet de critère
+        //     price: req.body.price,
+        //     description: req.body.description,
+        //     city: req.body.city.toLowerCase(),
+        //     user: "req.user._id" //id de user connecter
+        // });
+        // console.log('newOffer : ', newOffer);
+        // console.log("new table images :", images);
 
+        // res.render('addOffer');
+    });
+
+//le lancement du serveur
 app.listen(port, function() {
     console.log('Serveur lancer', port);
 });
 
-function formatDate() {
-    var date = new Date();
+// function qui trnsforme la date en format en il lui faut des ameliorations bientot 
+function formatDate(dateToProcessed) {
+    var date = new Date(dateToProcessed);
     var tableMonth = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     // console.log(date.getMonth());
     result = tableMonth[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear();
